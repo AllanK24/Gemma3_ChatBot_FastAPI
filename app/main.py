@@ -70,13 +70,13 @@ async def login(
 @app.get("/chat")
 async def chat(
     request: Request,
-    first_name: str = Query(..., title="First Name"),
-    last_name: str = Query(..., title="Last Name"),
-    language: str = Query(..., title="Preferred Language"),
+    first_name: str = Query("Anonymous", title="First Name"),
+    last_name: str = Query("User", title="Last Name"),
+    language: str = Query("English", title="Preferred Language"),
 ):
     return templates.TemplateResponse("chat.html", {
         "request": request,
-        "user_name": first_name + " " + last_name,
+        "user_name": (first_name + " " + last_name).strip(),
         "language": language
     })
 
