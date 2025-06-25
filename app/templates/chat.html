@@ -1,30 +1,38 @@
-<!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="{{ theme }}">
 <head>
     <meta charset="UTF-8">
     <title>Chat</title>
+    <script>
+        (function() {
+            function getTheme() {
+                const cookie = document.cookie.match(/theme=(dark|light)/);
+                if (cookie) return cookie[1];
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
+                return 'light';
+            }
+            document.documentElement.className = getTheme();
+        })();
+    </script>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
-    <div class="chat-container">
-        <h2 class="chat-title">Welcome, {{ user_name }}!</h2>
-
-        <!-- Hidden user data -->
-        <input type="hidden" id="user-name" value="{{ user_name }}">
-        <input type="hidden" id="user-language" value="{{ language }}">
-
-        <!-- Chat history -->
-        <div id="chat-history" class="chat-history">
-            <!-- Messages will be appended here by JS -->
+    <button id="themeToggle" class="theme-toggle" type="button" aria-label="Toggle colour scheme"></button>
+    
+    <div class="content-wrapper">
+        <div class="chat-container">
+            <h2 class="chat-title">Welcome, {{ user_name }}!</h2>
+            <br>
+            <input type="hidden" id="user-name" value="{{ user_name }}">
+            <input type="hidden" id="user-language" value="{{ language }}">
+            <div id="chat-history" class="chat-history"></div>
+            <form id="chat-form" class="chat-form">
+                <input type="text" id="user-message" placeholder="Type your message..." autocomplete="off" required>
+                <button type="submit">Send</button>
+            </form>
         </div>
-
-        <!-- Message input form -->
-        <form id="chat-form" class="chat-form">
-            <input type="text" id="user-message" placeholder="Type your message..." autocomplete="off" required>
-            <button type="submit">Send</button>
-        </form>
     </div>
 
+    <script src="/static/theme.js"></script>
     <script src="/static/chat.js"></script>
 </body>
 </html>

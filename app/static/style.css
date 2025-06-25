@@ -1,118 +1,173 @@
 /* ---------- Global reset ---------- */
-*,
-*::before,
-*::after{
-    box-sizing: border-box;   /* padding + border are included in width/height */
-    margin: 0;
-    padding: 0;
+*, *::before, *::after {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+}
+
+/* ---------- Theme variables ---------- */
+:root {                       /* Light (default) */
+  --bg:            #f5f5f5;
+  --card-bg:       #ffffff;
+  --text:          #111111;
+  --primary:       #4CAF50;
+  --primary-hover: #45a049;
+  --secondary:       #007BFF;
+  --secondary-hover: #0069d9;
+  --user-msg: #dcf8c6;
+  --ai-msg:   #f1f0f0;
+}
+
+html.dark {
+  --bg:            #121212;
+  --card-bg:       #1e1e1e;
+  --text:          #ffffff;
+  --primary:       #2e7d32;
+  --primary-hover: #1b5e20;
+  --secondary:       #1565c0;
+  --secondary-hover: #0d47a1;
+  --user-msg: #2e7d32;
+  --ai-msg:   #333333;
 }
 
 /* ---------- Page layout ---------- */
-body{
-    font-family: Arial, sans-serif;
-    background: #f5f5f5;
-    height: 100vh;
-
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: Arial, sans-serif;
+  height: 100vh;
+  /*
+    REMOVED flex properties from here to fix `position: fixed` button.
+    The flex centering is now handled by the `.content-wrapper` class.
+  */
 }
 
-/* ---------- Card / Form ---------- */
-form{
-    background: #ffffff;
-    padding: 2rem;
-    border-radius: 10px;
-    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-    width: 400px;
+/* ==================== FIX: NEW WRAPPER CLASS ==================== */
+/* This new class will center the content (form/chat) on the page. */
+.content-wrapper {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+/* =============================================================== */
 
-    display: flex;
-    flex-direction: column;
-    gap: 1rem;
+/* ---------- Card / Form ---------- */
+form {
+  background: var(--card-bg);
+  padding: 2rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 400px;
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 /* ---------- Inputs ---------- */
-label{
-    font-weight: bold;
-}
+label { font-weight: bold; }
 
 input,
-select{
-    padding: 0.5rem;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    font-size: 1rem;
+select {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: var(--bg); /* Changed to var(--bg) for better contrast */
+  color: var(--text);
 }
 
 /* ---------- Action Buttons ---------- */
 button,
-.skip-button{
-    /* identical size & shape */
-    display: block;          /* full-width in the form */
-    width: 100%;
-    padding: 0.6rem;         /* same vertical & horizontal padding */
-    border: none;
-    border-radius: 6px;
-    font-weight: bold;
-    cursor: pointer;
-    text-align: center;
-    text-decoration: none;   /* remove underline from <a> */
-    transition: background 0.2s;
+.skip-button {
+  display: block;
+  width: 100%;
+  padding: 0.6rem;
+  border: none;
+  border-radius: 6px;
+  font-weight: bold;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  transition: background 0.2s;
 }
 
-/* primary action – Login */
-button{
-    background: #4CAF50;
-    color: #ffffff;
+button:not(.theme-toggle) {
+  background: var(--primary);
+  color: #ffffff;
 }
-button:hover{
-    background: #45a049;
+button:not(.theme-toggle):hover {
+  background: var(--primary-hover);
 }
 
-/* secondary action – Skip */
-.skip-button{
-    background: #007BFF;
-    color: #ffffff;
-    margin-top: 0.5rem;      /* small gap under Login button */
+.skip-button {
+  background: var(--secondary);
+  color: #ffffff;
+  margin-top: 0.5rem;
 }
-.skip-button:hover{
-    background: #0069d9;
+.skip-button:hover {
+  background: var(--secondary-hover);
 }
+
+/* ---------- Theme toggle button ---------- */
+button.theme-toggle {
+  width: auto;
+  padding: 0;
+  background: transparent;
+  border: none;
+  font-size: 1.6rem;
+  line-height: 1;
+  cursor: pointer;
+  color: inherit;
+
+  position: fixed; /* This will now work correctly */
+  top: 1rem;
+  right: 1rem;
+  z-index: 1000;
+  transition: transform .2s ease;
+}
+button.theme-toggle:hover {
+  transform: scale(1.15) rotate(20deg);
+}
+
+/* ---------- Chat area ---------- */
+.chat-container {
+  background: var(--card-bg);
+  color: var(--text);
+  padding: 1rem;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  width: 450px; /* A bit wider for chat */
+}
+
+.chat-title { text-align: center; }
 
 .chat-history {
-    background: #fff;
-    padding: 1rem;
-    border-radius: 10px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
-    height: 400px;
-    overflow-y: auto;
-    margin-bottom: 1rem;
-    width: 400px; /* Set a fixed width to match the form */
-    display: flex;
-    flex-direction: column;
-    gap: 0.5rem;
+  background: var(--bg); /* Changed to var(--bg) for better contrast */
+  padding: 1rem;
+  border-radius: 10px;
+  height: 50vh; /* Relative height */
+  overflow-y: auto;
+  margin-bottom: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .message {
-    width: fit-content;
-    max-width: 80%;
-    padding: 0.7rem 1rem;
-    border-radius: 8px;
-    line-height: 1.4;
-    word-break: break-word;
+  width: fit-content;
+  max-width: 80%;
+  padding: 0.7rem 1rem;
+  border-radius: 12px; /* A bit more rounded */
+  line-height: 1.4;
+  word-break: break-word;
+  color: var(--text);
 }
+.message.user { align-self: flex-end; background: var(--user-msg); }
+.message.ai   { align-self: flex-start; background: var(--ai-msg); }
 
-.message.user {
-    align-self: flex-end;
-    background-color: #dcf8c6;
-}
-
-.message.ai {
-    align-self: flex-start;
-    background-color: #f1f0f0;
-}
-
-.chat-title {
-    text-align: center;
-}
+/* ---------- Scrollbar subtle in dark mode ---------- */
+html.dark ::-webkit-scrollbar-thumb { background: #555; }
+html.dark ::-webkit-scrollbar-track { background: #222; }

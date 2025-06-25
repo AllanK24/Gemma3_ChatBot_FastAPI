@@ -4,7 +4,7 @@ from utils.ai_client import ask_ai
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-from fastapi import FastAPI, Request, Form, Query
+from fastapi import FastAPI, Request, Form, Query, Cookie
 
 app = FastAPI()
 
@@ -27,9 +27,10 @@ async def root():
 ### * You want access to query parameters, headers, cookies, etc., in your route
 
 @app.get("/login")
-async def login(request: Request):
+async def login(request: Request, theme: str=Cookie(default="light")):
     return templates.TemplateResponse("login.html", {
-        "request": request
+        "request": request,
+        "theme": theme
     })
     
 ## FastAPI’s template system (Jinja2) needs the request object to do certain things inside the HTML.
@@ -70,6 +71,7 @@ async def login(
 @app.get("/chat")
 async def chat(
     request: Request,
+    theme: str = Cookie(default="light"),
     first_name: str = Query("Anonymous", title="First Name"),
     last_name: str = Query("User", title="Last Name"),
     language: str = Query("English", title="Preferred Language"),
@@ -77,7 +79,8 @@ async def chat(
     return templates.TemplateResponse("chat.html", {
         "request": request,
         "user_name": (first_name + " " + last_name).strip(),
-        "language": language
+        "language": language,
+        "theme": theme
     })
 
 class Message(BaseModel):
