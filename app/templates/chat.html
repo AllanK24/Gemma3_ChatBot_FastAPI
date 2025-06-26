@@ -2,17 +2,8 @@
 <head>
     <meta charset="UTF-8">
     <title>Chat</title>
-    <script>
-        (function() {
-            function getTheme() {
-                const cookie = document.cookie.match(/theme=(dark|light)/);
-                if (cookie) return cookie[1];
-                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) return 'dark';
-                return 'light';
-            }
-            document.documentElement.className = getTheme();
-        })();
-    </script>
+    <!-- ... (keep the inline script and link to stylesheet) ... -->
+    <script> /* ... */ </script>
     <link rel="stylesheet" href="/static/style.css">
 </head>
 <body>
@@ -24,10 +15,29 @@
             <br>
             <input type="hidden" id="user-name" value="{{ user_name }}">
             <input type="hidden" id="user-language" value="{{ language }}">
+
             <div id="chat-history" class="chat-history"></div>
+            
+            <!-- 1. This area will appear when a file is selected -->
+            <div id="file-preview-container" class="file-preview-container" style="display: none;">
+                <span id="file-name-display"></span>
+                <button id="clear-file-btn" type="button" title="Remove file">×</button>
+            </div>
+
+            <!-- 2. The chat form now contains the file input elements -->
             <form id="chat-form" class="chat-form">
-                <input type="text" id="user-message" placeholder="Type your message..." autocomplete="off" required>
-                <button type="submit">Send</button>
+                <div class="input-group">
+                    <!-- The actual file input, hidden from view -->
+                    <input type="file" id="file-attachment" style="display: none;" accept=".pdf,.txt,.png,.jpg,.jpeg">
+                    
+                    <!-- The styled "button" that the user clicks -->
+                    <label for="file-attachment" class="file-attach-btn" title="Attach file">
+                        📎
+                    </label>
+
+                    <input type="text" id="user-message" placeholder="Type your message or attach a file..." autocomplete="off">
+                    <button type="submit">Send</button>
+                </div>
             </form>
         </div>
     </div>

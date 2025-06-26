@@ -1,10 +1,11 @@
 from enum import Enum
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 from utils.ai_client import ask_ai
 from fastapi.staticfiles import StaticFiles
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
-from fastapi import FastAPI, Request, Form, Query, Cookie
+from fastapi import FastAPI, Request, Form, Query, Cookie, UploadFile, File, status, HTTPException
+from utils.file_processing import extract_pdf_text_from_bytes, get_file_extension, extract_image_text_from_bytes
 
 app = FastAPI()
 
@@ -26,6 +27,7 @@ async def root():
 ### * You're rendering an HTML template (TemplateResponse)
 ### * You want access to query parameters, headers, cookies, etc., in your route
 
+# Login page
 @app.get("/login")
 async def login(request: Request, theme: str=Cookie(default="light")):
     return templates.TemplateResponse("login.html", {
@@ -47,6 +49,7 @@ async def login(request: Request, theme: str=Cookie(default="light")):
 ### * …and more
 ### So when someone goes to http://localhost:8000/login, FastAPI creates a Request object describing that exact browser visit.
 
+# Login functionality
 class Language(str, Enum):
     ru = "Russian"
     en = "English"
@@ -67,7 +70,7 @@ async def login(
 ### This is useful for redirecting users to a new page after they submit a form.
 ### Think of Form(...) like input() for HTML forms.
 
-
+# Chat page
 @app.get("/chat")
 async def chat(
     request: Request,
@@ -83,18 +86,63 @@ async def chat(
         "theme": theme
     })
 
-class Message(BaseModel):
-    message: str
-    user_name: str
-    language: str
+# AI functionality
+@app.post("/chat/message", response_model=dict)
+async def chat_message(
+    message: str = Form(""),
+    user_name: str = Form(...),
+    language: str = Form(...),
+    # The file is received separately
+    file: UploadFile | None = File(None) 
+):
+    # Ensure there's some content to process
+    if not message and not file:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="No message or file provided.",
+        )
+        
+    full_message = message
+    file_content = ""
+    
+    if file:
+        print(f"Received file: {file.filename} ({file.content_type})")
+        raw_content = await file.read()
+        filext = get_file_extension(file.filename)
+        
+        match filext:
+            case ".pdf":
+                print("Processing PDF")
+                # Your function call is correct
+                file_content = extract_pdf_text_from_bytes(raw_content)
+            
+            case ".docx":
+                print("DOCX processing not implemented yet")
+                file_content = "[DOCX processing is not yet supported]"
+            
+            case ".txt":
+                print("Processing TXT")
+                file_content = raw_content.decode("utf-8", errors="ignore")
+                
+            case ".jpg" | ".jpeg" | ".png":
+                print("Processing Image file, not supported yet")
+                # content = extract_image_text_from_bytes(raw_content)
+                file_content = "[Image content extraction is not yet supported]"
 
-@app.post("/chat/message")
-async def chat_message(message: Message):
+            case _:
+                print(f"Unsupported file type: {filext}")
+                file_content = f"[File type {filext} is not supported]"
+
+        # Append the extracted content to the main message
+        full_message += f"\n\n--- Attached File Content ({file.filename}) ---\n{file_content}"
+        full_message = full_message.strip()
+    
     response = await ask_ai(
-        message=message.message,
-        user_name=message.user_name,
-        language=message.language
+        message=full_message,
+        user_name=user_name,
+        language=language
     )
+    
     return {
         "response": response,
     }

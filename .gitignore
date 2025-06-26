@@ -2,3 +2,4 @@
 .env
 app/__pycache__
 app/utils/__pycache__
+gpt4.1-mini.pdf

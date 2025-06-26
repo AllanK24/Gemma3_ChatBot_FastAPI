@@ -171,3 +171,92 @@ button.theme-toggle:hover {
 /* ---------- Scrollbar subtle in dark mode ---------- */
 html.dark ::-webkit-scrollbar-thumb { background: #555; }
 html.dark ::-webkit-scrollbar-track { background: #222; }
+
+.chat-form {
+  padding: 0;
+}
+
+.input-group {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.5rem;
+    background: var(--bg); /* Use background color for contrast */
+    border-radius: 8px;
+}
+
+.file-attach-btn {
+    flex-shrink: 0; /* Prevents the button from shrinking */
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 38px;
+    height: 38px;
+    background: var(--card-bg);
+    border: 1px solid #ccc;
+    border-radius: 50%; /* Make it circular */
+    font-size: 1.2rem;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+}
+
+.file-attach-btn:hover {
+    background-color: var(--primary-hover);
+    color: #fff;
+    transform: rotate(10deg);
+}
+
+/* Make the text input fill the remaining space */
+#user-message {
+    flex-grow: 1; /* Allows the input to take up available space */
+    border: none; /* Remove border since it's inside a styled group */
+    background: transparent;
+}
+#user-message:focus {
+    outline: none;
+}
+
+/* The file preview container that appears above the input */
+.file-preview-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5rem 0.8rem;
+    margin-bottom: 0.5rem;
+    background-color: var(--ai-msg);
+    border-radius: 6px;
+    font-size: 0.9rem;
+    animation: fadeIn 0.3s ease; /* Nice fade-in effect */
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+#file-name-display {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis; /* Prevents long filenames from breaking layout */
+    padding-right: 1rem;
+}
+
+/* The 'x' button to clear the selected file */
+#clear-file-btn {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    line-height: 1;
+    cursor: pointer;
+    color: var(--text);
+    opacity: 0.7;
+    padding: 0;
+    width: 24px;
+    height: 24px;
+}
+
+#clear-file-btn:hover {
+    opacity: 1;
+    color: #ff4d4d; /* Red on hover */
+}
